@@ -1,4 +1,4 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -6,7 +6,6 @@
 #include <direct.h> // Windows için _mkdir fonksiyonu
 #include <windows.h> // Windows API için
 #include <shlobj.h>  // SHGetFolderPath için
-
 #define MAX_PASSWORD_LENGTH 50
 #define MAX_TITLE_LENGTH 100
 #define MAX_CONTENT_LENGTH 1000
@@ -21,7 +20,7 @@ int directoryExists(const char* path) {
     struct stat info;
     if (stat(path, &info) != 0) {
         return 0; // Klasör bulunamadı
-    }
+    }zz
     return (info.st_mode & S_IFDIR); // Klasör mü?
 }
 
@@ -330,4 +329,4 @@ void getCurrentDate(char* dateStr) {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     strftime(dateStr, 20, "%d-%m-%Y %H:%M", tm);
-} 
+} */
