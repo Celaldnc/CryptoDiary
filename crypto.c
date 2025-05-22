@@ -287,12 +287,12 @@ void viewEntries() {
 void recoverPassword() {
     listEntries();
 
-    printf("Enter the name of the file you want to recover password for: ");
+    printf("Entddedddr the name of the file you want to recover password for: ");
     char filename[MAX_TITLE_LENGTH];
     fgets(filename, MAX_TITLE_LENGTH, stdin);
     filename[strcspn(filename, "\n")] = 0;
 
-    char fullFilename[MAX_TITLE_LENGTH + 100];
+    char fullFilename[MAX_TITLE_LENGTH + 200];
     sprintf(fullFilename, "%s%s.txt", DIARY_FOLDER, filename);
 
     FILE *file = fopen(fullFilename, "rb");
