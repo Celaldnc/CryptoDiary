@@ -2,8 +2,18 @@
 #include <stdlib.h>     // Temel C fonksiyonları (atoi, malloc, vs.)
 #include <string.h>     // String işlemleri
 #include <time.h>       // Zaman ve tarih işlemleri
-#include <sys/stat.h>   // Dosya ve klasör bilgisi için
-#include <unistd.h>     // mkdir, access gibi POSIX fonksiyonlar
+#include <sys/stat.h>   // struct stat için gerekli
+
+// Platform bağımsız başlık dosyaları
+#ifdef _WIN32
+    #include <windows.h>
+    #include <direct.h>
+    #define mkdir(path, mode) _mkdir(path)
+    #define PATH_SEPARATOR "\\"
+#else
+    #include <unistd.h>
+    #define PATH_SEPARATOR "/"
+#endif
 
 // Maksimum uzunluk tanımlamaları
 #define MAX_PASSWORD_LENGTH 50       // Maksimum şifre uzunluğu
@@ -33,18 +43,28 @@ int directoryExists(const char* path) {
 
 // Belirtilen yolda klasör oluşturur
 int createDirectory(const char* path) {
-    return mkdir(path, 0755) == 0;  // Klasörü 755 izniyle oluştur (Linux/UNIX)
+    #ifdef _WIN32
+        return _mkdir(path) == 0;
+    #else
+        return mkdir(path, 0755) == 0;
+    #endif
 }
 
 // Kullanıcının masaüstü yolunu belirler ve günlük klasörü oluşturmak için kullanılır
 void getDesktopPath() {
-    const char* homeDir = getenv("HOME");  // Kullanıcının home dizini alınır
+    #ifdef _WIN32
+        const char* homeDir = getenv("USERPROFILE");
+    #else
+        const char* homeDir = getenv("HOME");
+    #endif
+
     if (homeDir == NULL) {
-        fprintf(stderr, "Could not get HOME directory\n");
+        fprintf(stderr, "Could not get home directory\n");
         exit(1);
     }
     // Masaüstü altına "CryptoDiary" klasörü tanımlanır
-    sprintf(DIARY_FOLDER, "%s/Desktop/CryptoDiary/", homeDir);
+    sprintf(DIARY_FOLDER, "%s%sDesktop%sCryptoDiary%s", 
+            homeDir, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR);
 }
 
 // Caesar Cipher algoritması: Metni verilen anahtar kadar kaydırarak şifreler
@@ -239,6 +259,34 @@ void deleteEntry(const char* filename) {
 
 // Tüm kayıtlı günlük başlıklarını listeler
 void listEntries() {
+    #ifdef _WIN32
+        WIN32_FIND_DATA findFileData;
+        HANDLE hFind;
+        char searchPath[MAX_PATH_LENGTH];
+        sprintf(searchPath, "%s*.txt", DIARY_FOLDER);
+        
+        printf("\n=== Current Diary Entries ===\n");
+        hFind = FindFirstFile(searchPath, &findFileData);
+        
+        if (hFind == INVALID_HANDLE_VALUE) {
+            printf("No diary entries found!\n");
+            return;
+        }
+        
+        int count = 0;
+        do {
+            if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+                char* filename = findFileData.cFileName;
+                char* ext = strstr(filename, ".txt");
+                if (ext) *ext = '\0';
+                printf("%s\n", filename);
+                count++;
+            }
+        } while (FindNextFile(hFind, &findFileData));
+        
+        FindClose(hFind);
+        if (count == 0) printf("No diary entries found!\n");
+    #else
     FILE *fp;
     char command[300];
     sprintf(command, "ls %s*.txt 2>/dev/null", DIARY_FOLDER);
@@ -267,6 +315,7 @@ void listEntries() {
 
     pclose(fp);
     if (count == 0) printf("No diary entries found!\n");
+    #endif
 }
 
 // Kullanıcıdan günlük ismi alır ve okuma işlemini başlatır

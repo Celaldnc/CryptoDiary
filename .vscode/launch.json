@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/celal/Desktop/yazilim/CandC++/odev",
-      "program": "c:/Users/celal/Desktop/yazilim/CandC++/odev/build/Debug/outDebug",
+      "cwd": "c:/Users/celal/Desktop/Github/CryptoDiary/CryptoDiary",
+      "program": "c:/Users/celal/Desktop/Github/CryptoDiary/CryptoDiary/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
