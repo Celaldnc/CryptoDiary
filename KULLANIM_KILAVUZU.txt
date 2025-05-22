@@ -1,0 +1,41 @@
+CryptoDiary Kullanım Kılavuzu
+===========================
+
+Bu program, şifrelenmiş günlük notları oluşturmanızı, okumanızı ve yönetmenizi sağlar.
+
+BAŞLARKEN
+---------
+1. Programı derlemek için "compile.bat" dosyasına çift tıklayın.
+2. Oluşturulan "cryptodiary.exe" dosyasını çalıştırın.
+
+YENİ GÜNLÜK GİRİŞİ OLUŞTURMA
+----------------------------
+1. Ana menüden "1" seçeneğini seçin.
+2. Günlük girişiniz için bir başlık girin.
+3. İçeriği yazın. Bitirmek için yeni bir satırda sadece "." yazın.
+4. Günlük girişiniz için bir şifre belirleyin.
+   NOT: Bu şifreyi unutmayın! Şifrenizi kaybederseniz, günlük girişinize erişemezsiniz.
+
+GÜNLÜK GİRİŞLERİNİ GÖRÜNTÜLEME
+-----------------------------
+1. Ana menüden "2" seçeneğini seçin.
+2. Mevcut günlük girişlerinin listesi görüntülenecektir.
+3. Okumak istediğiniz günlük girişinin dosya adını girin.
+4. Şifreyi girin. Doğru şifreyi girerseniz, günlük içeriği görüntülenecektir.
+
+GÜNLÜK GİRİŞİ SİLME
+------------------
+1. Ana menüden "3" seçeneğini seçin.
+2. Mevcut günlük girişlerinin listesi görüntülenecektir.
+3. Silmek istediğiniz günlük girişinin dosya adını girin.
+4. Şifreyi girin. Doğru şifreyi girerseniz, günlük girişi silinecektir.
+
+ÇIKIŞ
+-----
+Ana menüden "4" seçeneğini seçerek programdan çıkabilirsiniz.
+
+GÜVENLİK NOTLARI
+---------------
+- Şifrelerinizi güvenli bir yerde saklayın.
+- Programın kullandığı şifreleme yöntemi (XOR) basit bir şifreleme yöntemidir ve profesyonel kullanım için önerilmez.
+- Çok gizli bilgiler için daha güvenli şifreleme yöntemleri kullanan programlar tercih edilmelidir. 
