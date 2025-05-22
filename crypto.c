@@ -78,7 +78,7 @@ void caesarEncrypt(char* text, int key) {
         // Rakamlar için kaydırma
         else if (c >= '0' && c <= '9') text[i] = ((c - '0' + key) % 10) + '0';
         // Diğer karakterler aynen bırakılır (isteğe bağlı olarak değiştirebilirsin)
-        // TÜRKÇE karakter gibi yüksek baytlı UTF-8 karakterleri **hiç dokunma**
+        // TÜRKÇE karakter gibi yüksek baytlı UTF-8 karakterleri *hiç dokunma*
         else if (c < 128) text[i] = c; 
     }
 
@@ -94,7 +94,7 @@ void caesarDecrypt(char* text, int key) {
         else if (c >= 'A' && c <= 'Z') text[i] = ((c - 'A' - key + 26) % 26) + 'A';
         // Rakamlar için çözüm
         else if (c >= '0' && c <= '9') text[i] = ((c - '0' - key + 10) % 10) + '0';
-        // TÜRKÇE karakter gibi yüksek baytlı UTF-8 karakterleri **hiç dokunma**
+        // TÜRKÇE karakter gibi yüksek baytlı UTF-8 karakterleri *hiç dokunma*
         else if (c < 128) text[i] = c; 
     }
 }
