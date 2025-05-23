@@ -135,62 +135,48 @@ void getCurrentDate(char* dateStr) {
 }
 // Kullanıcıdan başlık, içerik ve şifre alarak şifrelenmiş günlük dosyası oluşturur
 void createEntry() {
-    DiaryEntry entry;
+    char title[MAX_TITLE_LENGTH];
+    char content[MAX_CONTENT_LENGTH];
     char filename[MAX_TITLE_LENGTH + 100];
 
     printf("\n=== New Diary Entry ===\n");
 
     // Başlık al
     printf("Title: ");
-    fgets(entry.title, MAX_TITLE_LENGTH, stdin);
-    entry.title[strcspn(entry.title, "\n")] = 0; // Satır sonunu sil
+    fgets(title, MAX_TITLE_LENGTH, stdin);
+    title[strcspn(title, "\n")] = 0; // Satır sonunu sil
 
     // İçerik al
     printf("Content (enter '.' on a new line to finish):\n");
-    entry.content[0] = '\0'; // içerik sıfırla
+    content[0] = '\0';
     char line[100];
-
-    // İçerik satır satır alınır, kullanıcı "." yazana kadar devam eder
     while (1) {
         fgets(line, sizeof(line), stdin);
         if (strcmp(line, ".\n") == 0 || strcmp(line, ".\r\n") == 0) break;
-        if (strlen(entry.content) + strlen(line) < MAX_CONTENT_LENGTH) {
-            strcat(entry.content, line);
+        if (strlen(content) + strlen(line) < MAX_CONTENT_LENGTH) {
+            strcat(content, line);
         } else {
             printf("Content too long! Saving...\n");
             break;
         }
     }
 
-    printf("Recovery Question (e.g., Your pet's name?): ");
-    fgets(entry.recovery_question, sizeof(entry.recovery_question), stdin);
-    entry.recovery_question[strcspn(entry.recovery_question, "\n")] = 0;
-
-    printf("Recovery Answer: ");
-    fgets(entry.recovery_answer, sizeof(entry.recovery_answer), stdin);
-    entry.recovery_answer[strcspn(entry.recovery_answer, "\n")] = 0;
-
-
-    // Şifre (anahtar) pozitif sayı olarak alınır
+    // Şifre al
     int key = getPositiveKeyFromUser();
-    sprintf(entry.password, "%d", key); // string olarak kaydedilir
 
-    // İçerik şifrelenir
-    caesarEncrypt(entry.content, key);
+    // İçeriği şifrele
+    caesarEncrypt(content, key);
 
-    // Tarih bilgisi eklenir
-    getCurrentDate(entry.date);
-
-    // Dosya ismi oluşturulur (başlığa göre)
-    sprintf(filename, "%s%s.txt", DIARY_FOLDER, entry.title);
-    FILE *file = fopen(filename, "wb");
+    // Dosya ismi oluştur
+    sprintf(filename, "%s%s.txt", DIARY_FOLDER, title);
+    FILE *file = fopen(filename, "w");
     if (!file) {
         printf("Could not create file!\n");
         return;
     }
 
-    // Günlük dosyaya yazılır
-    fwrite(&entry, sizeof(DiaryEntry), 1, file);
+    // Şifreli içeriği ve anahtarı dosyaya yaz
+    fprintf(file, "%s", content);
     fclose(file);
 
     printf("Diary entry successfully saved!\n");
@@ -198,37 +184,34 @@ void createEntry() {
 
 // Günlüğü şifrelenmiş haliyle gösterir, doğru şifre girilirse çözüp okunabilir hale getirir
 void readEntry(const char* filename) {
-    FILE *file = fopen(filename, "rb");
+    FILE *file = fopen(filename, "r");
     if (!file) {
         printf("File not found!\n");
         return;
     }
 
-    DiaryEntry entry;
-    fread(&entry, sizeof(DiaryEntry), 1, file);
+    int trueKey;
+    char content[MAX_CONTENT_LENGTH];
+
+    // İlk satırda anahtar var
+    fscanf(file, "%d\n", &trueKey);
+    // Kalanı şifreli içerik
+    fgets(content, sizeof(content), file);
     fclose(file);
 
-    // Şifreli halini ekranda göster
-    printf("\nEncrypted content:\n%s\n", entry.content);
-
-    // Kullanıcıdan şifre al
+    // Şifre sor
     int key = getPositiveKeyFromUser();
-    int trueKey = atoi(entry.password); // dosyada kayıtlı olan şifre
-
-    // Şifre doğrulama
     if (key != trueKey) {
         printf("Incorrect password!\n");
         return;
     }
 
-    // İçerik deşifre edilir
-    caesarDecrypt(entry.content, key);
+    // Şifreyi çöz
+    caesarDecrypt(content, key);
 
-    // Günlük gösterilir
-    printf("\n=== %s (%s) ===\n", entry.title, entry.date);
-    printf("%s\n", entry.content);
+    printf("\n=== Diary Content ===\n");
+    printf("%s\n", content);
 }
-
 // Günlük silmek için şifre doğrulaması yapılır
 void deleteEntry(const char* filename) {
     FILE *file = fopen(filename, "rb");

@@ -32,7 +32,7 @@ GÜNLÜK GİRİŞİ SİLME
 
 ÇIKIŞ
 -----
-Ana menüden "4" seçeneğini seçerek programdan çıkabilirsiniz.
+Ana menüden "5" seçeneğini seçerek programdan çıkabilirsiniz.
 
 GÜVENLİK NOTLARI
 ---------------
