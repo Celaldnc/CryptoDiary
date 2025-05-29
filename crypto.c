@@ -368,6 +368,81 @@ void recoverPassword() {
     }
 }
 
+// Günlük girişini düzenleme fonksiyonu
+void editEntry() {
+    listEntries(); // Günlükleri göster
+
+    // Hangi günlük düzenlenecek?
+    printf("Düzenlemek istediğiniz günlüğün adını girin: ");
+    char filename[MAX_TITLE_LENGTH];
+    fgets(filename, MAX_TITLE_LENGTH, stdin);
+    filename[strcspn(filename, "\n")] = 0;
+
+    char fullFilename[MAX_TITLE_LENGTH + 100];
+    sprintf(fullFilename, "%s%s.txt", DIARY_FOLDER, filename);
+
+    FILE *file = fopen(fullFilename, "rb");
+    if (!file) {
+        printf("Dosya bulunamadı!\n");
+        return;
+    }
+
+    DiaryEntry entry;
+    fread(&entry, sizeof(DiaryEntry), 1, file);
+    fclose(file);
+
+    // Şifre al ve kontrol et
+    int key = getPositiveKeyFromUser();
+    int trueKey = atoi(entry.password);
+
+    if (key != trueKey) {
+        printf("Hatalı şifre!\n");
+        return;
+    }
+
+    // İçeriği deşifre et
+    caesarDecrypt(entry.content, key);
+
+    // Eski içeriği göster
+    printf("\n=== %s (%s) ===\n", entry.title, entry.date);
+    printf("Mevcut içerik:\n%s\n", entry.content);
+
+    // Yeni içerik için kullanıcıdan veri al
+    printf("\nYeni içeriği girin (bitirmek için yeni satırda '.' yazın):\n");
+    char newContent[MAX_CONTENT_LENGTH];
+    newContent[0] = '\0';
+    char line[100];
+
+    while (1) {
+        fgets(line, sizeof(line), stdin);
+        if (strcmp(line, ".\n") == 0 || strcmp(line, ".\r\n") == 0) break;
+        if (strlen(newContent) + strlen(line) < MAX_CONTENT_LENGTH) {
+            strcat(newContent, line);
+        } else {
+            printf("İçerik çok uzun! Kaydediliyor...\n");
+            break;
+        }
+    }
+
+    // İçeriği güncelle ve yeni tarih ekle
+    strcpy(entry.content, newContent);
+    getCurrentDate(entry.date);
+    
+    // İçeriği şifrele
+    caesarEncrypt(entry.content, key);
+
+    // Dosyaya geri yaz
+    file = fopen(fullFilename, "wb");
+    if (!file) {
+        printf("Dosya güncellenemedi!\n");
+        return;
+    }
+    
+    fwrite(&entry, sizeof(DiaryEntry), 1, file);
+    fclose(file);
+
+    printf("Günlük başarıyla güncellendi!\n");
+}
 
 // Ana menü: kullanıcıya seçimler sunar
 int main() {
@@ -391,7 +466,8 @@ int main() {
         printf("2. View diary entries\n");
         printf("3. Delete diary entry\n");
         printf("4. Recover forgotten password\n");
-        printf("5. Exit\n");
+        printf("5. Edit diary entry\n");
+        printf("6. Exit\n");
         printf("Your choice: ");
         scanf("%d", &choice);
         getchar(); // satır sonu temizle
@@ -420,6 +496,9 @@ int main() {
                 recoverPassword();
                 break;
             case 5:
+                editEntry();
+                break;
+            case 6:
                 printf("Exiting CryptoDiary...\n");
                 return 0;
             default:
